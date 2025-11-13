@@ -1,0 +1,29 @@
+name: Create Release Zip
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  create-release-zip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create versioned ZIP
+        run: |
+          # Remove .git directory from archive
+          rm -rf .git
+          # Create ZIP with flat structure using version tag
+          zip -r "mod_bombs_reforged-${{ github.event.release.tag_name }}.zip" . -x '*.git*'
+
+      - name: Upload to Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "mod_bombs_reforged-${{ github.event.release.tag_name }}.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
