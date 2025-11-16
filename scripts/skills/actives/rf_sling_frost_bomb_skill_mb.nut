@@ -1,4 +1,4 @@
-local obj = ::Reforged.InheritHelper.slingItemSkill("throw_fire_bomb_skill");
+local obj = ::Reforged.InheritHelper.slingItemSkill("throw_frost_bomb_skill");
 
 local onUse_mod_bombs = function( _user, _targetTile )
 {
@@ -16,7 +16,6 @@ local onUse_mod_bombs = function( _user, _targetTile )
 	
 	if (_user.getSkills().hasSkill("perk.rf_grenadier")){
 			local chance = _user.getSkills().getAllSkillsByID("perk.rf_grenadier")[0].getChance();
-			::logInfo("item "+ this.getItem())
 		 	if(this.Math.rand(1, 100) > chance){		 				
 		 		this.getItem().removeSelf();	
 		 	}
@@ -43,18 +42,15 @@ local create = obj.create;
 	function create()
 	{
 		create();
-		this.m.Icon = "skills/rf_sling_fire_bomb_skill.png";
-		this.m.IconDisabled = "skills/rf_sling_fire_bomb_skill_sw.png";
-		this.m.Overlay = "rf_sling_fire_bomb_skill";
+		this.m.Icon = "skills/rf_sling_holy_water_skill.png";
+		this.m.IconDisabled = "skills/rf_sling_holy_water_skill_sw.png";
+		this.m.Overlay = "rf_sling_holy_water_skill";
 	}
 
 	function onUse(_user, _targetTile){		
 		onUse_mod_bombs(_user, _targetTile);
 	}
 
-	function get_item(){
-		return this.getItem();
-	}
 });
 
-this.rf_sling_fire_bomb_skill_mb <- ::inherit("scripts/skills/actives/throw_fire_bomb_skill", obj);
+this.rf_sling_frost_bomb_skill_mb <- ::inherit("scripts/skills/actives/throw_frost_bomb_skill", obj);
