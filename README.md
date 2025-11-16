@@ -18,6 +18,11 @@ All the weaker bombs have been slightly reworked into more powerful, more useful
 - craftable using 2x Goblin Poison Items (could someone please create an icon for me for this one?)
 - also works with Slings
 
+## New Item: Frost Bomb
+- applies the Chilled Effect on a 7 tile Radius (-2ap, -30 initiative)
+- creates Snow Ground on the tiles affected lowering the movement through the area.
+- can be crafted from a Frost Unhold Fur and Serpent Skin
+
 ## New Perk: Grenadier
 - Found in Throwing Perk Tree at Tier 6.
 - Effects
@@ -25,4 +30,5 @@ All the weaker bombs have been slightly reworked into more powerful, more useful
 ---- Reduces the AP of Throwing a Bomb by 1 (works with Slings also)
 ---- Reduces the Fatigue Cost of Throwing a Bomb by 25%
 ---- Gives a 60% chance of not wasting the bomb you just thrown, enabling it to be thrown again.
+
 
