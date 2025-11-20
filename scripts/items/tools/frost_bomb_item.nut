@@ -6,13 +6,13 @@ this.frost_bomb_item <- this.inherit("scripts/items/weapons/weapon", {
 		this.m.ID = "weapon.frost_bomb";
 		this.m.Name = "Frost Bomb";
 		this.m.Description = "A pot filled with highly liquid frost that will chill an area when thrown.";
-		this.m.IconLarge = "consumables/antidote_01.png";
-		this.m.Icon = "consumables/antidote_01.png";
+		this.m.IconLarge = "tools/frost_bomb_01.png";
+		this.m.Icon = "tools/frost_bomb_01_70x70.png";
 		this.m.SlotType = this.Const.ItemSlot.Offhand;
 		this.m.ItemType = this.Const.Items.ItemType.Tool;
 		this.m.AddGenericSkill = true;
 		this.m.ShowArmamentIcon = true;
-		this.m.ArmamentIcon = "tools/daze_bomb_01.png";
+		this.m.ArmamentIcon = "icon_frost_bomb_01";
 		this.m.Value = 600;
 		this.m.RangeMax = 3;
 		this.m.StaminaModifier = 0;
