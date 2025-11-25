@@ -12,7 +12,7 @@ this.perk_rf_grenadier <- ::inherit("scripts/skills/skill", {
 
 	function getChance()
 	{
-		return 60;
+		return 75;
 	}
 
 	function onUpdate( _properties )
