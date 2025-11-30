@@ -41,10 +41,10 @@
 				this.m.MinRange = weapon.getRangeMin();
 				this.m.MaxRange = weapon.getRangeMax() + (_properties.IsSpecializedInBombs ? 1 : 0);;
 			} else {
-				this.m.MaxRange = this.m.Item.getRangeMax() + (_properties.IsSpecializedInBombs ? 1 : 0);	
+				this.m.MaxRange = this.m.MaxRange + (_properties.IsSpecializedInBombs ? 1 : 0);	
 			}			
 			this.m.FatigueCostMult = this.Const.Combat.WeaponSpecFatigueMult;
-			this.m.ActionPointCost = 4;
+			// this.m.ActionPointCost = 4;
 		}
 	}
 

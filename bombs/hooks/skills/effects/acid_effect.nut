@@ -2,8 +2,8 @@
 	q.applyDamage =  @(__original) function(){		
 		if (this.m.LastRoundApplied != this.Time.getRound()){
 			__original();
-			this.m.LastRoundApplied = this.Time.getRound()-1;
-			__original();
+			// this.m.LastRoundApplied = this.Time.getRound()-1;
+			// __original();
 		}
 	}
 

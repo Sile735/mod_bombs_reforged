@@ -9,8 +9,8 @@
 			{
 				Type = ::UPD.EffectType.Passive,
 				Description = [
-					"Throwing a Bomb or Flask costs [color=" + this.Const.UI.Color.PositiveValue + "]1ap[/color] less to use.",
-					"Increases the range of your Throw Bomb or Flask by [color=" + this.Const.UI.Color.PositiveValue + "]1 tile[/color].",
+					// "Throwing a Bomb or Flask costs [color=" + this.Const.UI.Color.PositiveValue + "]1ap[/color] less to use.",
+					"Increases the range of your Throw Bomb or Flask by [color=" + this.Const.UI.Color.PositiveValue + "]+1[/color].",
 					"The fatigue cost of your Throw Bomb or Flask are reduced by [color=" + this.Const.UI.Color.PositiveValue + "]25%[/color].",
 					"Has a [color=" + this.Const.UI.Color.PositiveValue + "]"+ ::new("scripts/skills/perks/perk_rf_grenadier").getChance() + "%[/color] chance not to consume a thrown grenade or bomb",
 					
