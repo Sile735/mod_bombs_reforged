@@ -3,7 +3,6 @@ All the weaker bombs have been slightly reworked into more powerful, more useful
 
 ## Acid Flask
 - now affects a 7 tile area ( similar to the Fire Bomb )
-- damage armor effect is now approximately twice as strong ( applies twice the 20% armor damage)
 
 ## Holy Water
 - now affects a 7 tile area (similar to the Fire Bomb)
@@ -24,11 +23,10 @@ All the weaker bombs have been slightly reworked into more powerful, more useful
 - can be crafted from a Frost Unhold Fur and Serpent Skin
 
 ## New Perk: Grenadier
-- Found in Throwing Perk Tree at Tier 6.
+- Found in Throwing Perk Tree at Tier 7.
 - Effects
 ---- Increases the Range of Bomb Throwing by 1 (works with Slings also)
----- Reduces the AP of Throwing a Bomb by 1 (works with Slings also)
 ---- Reduces the Fatigue Cost of Throwing a Bomb by 25%
----- Gives a 60% chance of not wasting the bomb you just thrown, enabling it to be thrown again.
+---- Gives a 57% chance of not wasting the bomb you just thrown, enabling it to be thrown again.
 
 

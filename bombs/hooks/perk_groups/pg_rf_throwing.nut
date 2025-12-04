@@ -10,8 +10,8 @@
 			["perk.rf_hybridization"],
 			["perk.mastery.throwing"],
 			["perk.rf_opportunist"],
-			["perk.rf_grenadier"],
-			[]
+			[],
+			["perk.rf_grenadier"]
 		];		
 	}
 });

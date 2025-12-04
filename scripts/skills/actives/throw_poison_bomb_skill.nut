@@ -4,7 +4,7 @@ this.throw_poison_bomb_skill <- this.inherit("scripts/skills/skill", {
 	{
 		this.m.ID = "actives.throw_poison_bomb";
 		this.m.Name = "Throw Poison Bomb";
-		this.m.Description = "Throw a flask of goblin poison towards a target, where it will shatter and spray its contents.";
+		this.m.Description = "Throw a flask of poison towards a target, where it will shatter and spray its contents.";
 		this.m.Icon = "skills/active_95.png";
 		this.m.IconDisabled = "skills/active_95_sw.png";
 		this.m.Overlay = "active_95";
@@ -92,14 +92,16 @@ this.throw_poison_bomb_skill <- this.inherit("scripts/skills/skill", {
 		}
 
 		local poison = _target.getSkills().getSkillByID("effects.goblin_poison_effect");
+		local poison2 = _target.getSkills().getSkillByID("effects.spider_poison_effect");
 
 		if (poison == null)
 		{
 			_target.getSkills().add(this.new("scripts/skills/effects/goblin_poison_effect"));
-		}
+			_target.getSkills().add(this.new("scripts/skills/effects/spider_poison_effect"));			
 		else
 		{
 			poison.resetTime();
+			poison2.resetTime();
 		}
 
 		this.spawnIcon("status_effect_54", _target.getTile());
