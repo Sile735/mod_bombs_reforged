@@ -97,7 +97,8 @@ this.throw_poison_bomb_skill <- this.inherit("scripts/skills/skill", {
 		if (poison == null)
 		{
 			_target.getSkills().add(this.new("scripts/skills/effects/goblin_poison_effect"));
-			_target.getSkills().add(this.new("scripts/skills/effects/spider_poison_effect"));			
+			_target.getSkills().add(this.new("scripts/skills/effects/spider_poison_effect"));
+		}			
 		else
 		{
 			poison.resetTime();
