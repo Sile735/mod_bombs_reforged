@@ -1,5 +1,7 @@
 this.poison_bomb_item <- this.inherit("scripts/items/weapons/weapon", {
-	m = {},
+	m = {
+		UsedThisTurn = false
+	},
 	function create()
 	{
 		this.weapon.create();
@@ -17,6 +19,7 @@ this.poison_bomb_item <- this.inherit("scripts/items/weapons/weapon", {
 		this.m.RangeMax = 3;
 		this.m.StaminaModifier = 0;
 		this.m.IsDroppedAsLoot = true;
+		this.m.UsedThisTurn = false;
 	}
 
 	function getTooltip()
@@ -74,12 +77,22 @@ this.poison_bomb_item <- this.inherit("scripts/items/weapons/weapon", {
 			icon = "ui/icons/special.png",
 			text = "Will set [color=" + this.Const.UI.Color.DamageValue + "]7[/color] tiles with poison for 3 rounds"
 		});
-		result.push({
-			id = 6,
-			type = "text",
-			icon = "ui/icons/special.png",
-			text = "Is destroyed on use"
-		});
+		if( this.m.Container != null && this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier") && this.m.UsedThisTurn == false){			
+			result.push({
+				id = 6,
+				type = "text",
+				icon = "ui/icons/special.png",
+				text = "A " + ::MSU.Text.colorPositive("Grenadier") + " character can use this once per combat without destroying it."
+			});
+		}
+		else {
+			result.push({
+				id = 6,
+				type = "text",
+				icon = "ui/icons/special.png",
+				text = "Is destroyed on use"
+			});
+		}
 		return result;
 	}
 
@@ -100,6 +113,22 @@ this.poison_bomb_item <- this.inherit("scripts/items/weapons/weapon", {
 		local skill = ::new("scripts/skills/actives/rf_sling_poison_bomb_skill_mb");
 		skill.setItem(this);
 		this.addSkill(skill);
+	}
+
+	function onCombatFinished()
+	{
+		if( this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier"))
+		{
+			this.m.UsedThisTurn = false;
+		};		
+	}
+
+	function onCombatStarted()
+	{
+		if( this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier"))
+		{
+			this.m.UsedThisTurn = false;
+		};
 	}
 
 });

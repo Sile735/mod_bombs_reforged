@@ -13,11 +13,13 @@
 		}
 
 		if (_user.getSkills().hasSkill("perk.rf_grenadier")){
-			local chance = _user.getSkills().getAllSkillsByID("perk.rf_grenadier")[0].getChance();
-		 	if(this.Math.rand(1, 100) > chance){		 				
-		 		_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));	
+			local item = _user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand);
+		 	if ( item.m.UsedThisTurn ){
+		 		_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));
 		 	}
-		 	else{		 		
+		 	else{
+		 		::logInfo("first time bomb is used this combat, not consuming it")
+		 		item.m.UsedThisTurn = true;
 		 	}
 		}
 		else{

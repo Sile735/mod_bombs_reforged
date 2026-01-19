@@ -16,11 +16,13 @@ local onUse_mod_bombs = function( _user, _targetTile )
 	// this.getItem().removeSelf(); // Vanilla unequips the offhand item. But we instead need to consume the respective Item from whereever it is
 	
 	if (_user.getSkills().hasSkill("perk.rf_grenadier")){
-			local chance = _user.getSkills().getAllSkillsByID("perk.rf_grenadier")[0].getChance();
-		 	if(this.Math.rand(1, 100) > chance){		 				
-		 		this.getItem().removeSelf();	
+			local item = this.getItem();
+		 	if ( item.m.UsedThisTurn ){
+		 		this.getItem().removeSelf();
 		 	}
-		 	else{		 		
+		 	else{
+		 		::logInfo("first time bomb is used this combat, not consuming it")
+		 		item.m.UsedThisTurn = true;
 		 	}
 		}
 		else{
