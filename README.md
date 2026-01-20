@@ -24,9 +24,10 @@ All the weaker bombs have been slightly reworked into more powerful, more useful
 
 ## New Perk: Grenadier
 - Found in Throwing Perk Tree at Tier 7.
-- Effects
----- Increases the Range of Bomb Throwing by 1 (works with Slings also)
----- Reduces the Fatigue Cost of Throwing a Bomb by 25%
----- Gives a 57% chance of not wasting the bomb you just thrown, enabling it to be thrown again.
+- Effects:
+  - Increases the range of bomb throwing by 1 (works with slings also).
+  - Reduces the fatigue cost of throwing a bomb by 25%.
+  - The first use of each of your Bombs in combat does not consume it. 
+
 
 
