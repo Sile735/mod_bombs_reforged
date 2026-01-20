@@ -110,17 +110,5 @@
 			// this.m.ActionPointCost = 4;
 		}
 	}
-
-	q.onCombatStarted = @(__original) function()
-	{
-		this.m.IsSpent = false;
-	}
-
-	q.onCombatFinished = @(__original) function()
-	{
-		this.m.IsSpent = false;
-	}
-
-
 	
 })
