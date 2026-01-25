@@ -13,15 +13,9 @@
 	}
 
 	q.onPutIntoBag = @() { function onPutIntoBag()
-	{
-		local skill = this.getContainer().getActor().getSkills().getSkillByID("actives.sling_fire_bomb");		
-		if (skill == null)
-  		{
-    		skill = ::new("scripts/skills/actives/rf_sling_fire_bomb_skill_mb");
-    		this.addSkill(skill);
-  		}
-		skill.setItem(this);		
-		skill.m.FreeCounter++;		
+	{	
+  		this.addSkill(::new("scripts/skills/actives/rf_sling_fire_bomb_skill_mb"));  		
+  		this.getContainer().getActor().getSkills().getSkillByID("actives.sling_fire_bomb").m.FreeCounter++;
 	}}.onPutIntoBag;
 
 	q.onRemovedFromBag = @(__original) function()

@@ -15,8 +15,6 @@ local onUse_mod_bombs = function( _user, _targetTile )
 	// this.getItem().removeSelf(); // Vanilla unequips the offhand item. But we instead need to consume the respective Item from whereever it is
 	
 	if (_user.getSkills().hasSkill("perk.rf_grenadier")){
-			local item = this.getItem();
-			::logInfo("total number of free charges: " + this.m.FreeCounter );
 		 	if ( this.m.FreeCounter == 0 ){
 		 		this.getItem().removeSelf();
 		 	}
@@ -36,6 +34,8 @@ local onUse_mod_bombs = function( _user, _targetTile )
 		User = _user,
 		TargetTile = _targetTile
 	});
+
+	return true;
 };
 
 // Use MSU.Table.merge to overwrite functions so that function names are preserved in stackinfos
@@ -52,7 +52,7 @@ local getTooltip = obj.getTooltip;
 	}
 
 	function onUse(_user, _targetTile){		
-		onUse_mod_bombs(_user, _targetTile);
+		return onUse_mod_bombs(_user, _targetTile);
 	}
 
 	function get_item(){

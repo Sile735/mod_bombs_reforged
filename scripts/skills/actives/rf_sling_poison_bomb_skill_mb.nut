@@ -15,18 +15,17 @@ local onUse_mod_bombs = function( _user, _targetTile )
 	// this.getItem().removeSelf(); // Vanilla unequips the offhand item. But we instead need to consume the respective Item from whereever it is
 	
 	if (_user.getSkills().hasSkill("perk.rf_grenadier")){
-			local item = this.getItem();
-		 	if ( item.m.UsedThisTurn ){
+		 	if ( this.m.FreeCounter == 0 ){
 		 		this.getItem().removeSelf();
 		 	}
-		 	else{
-		 		::logInfo("first time bomb is used this combat, not consuming it")
-		 		item.m.UsedThisTurn = true;
+		 	else{		 		
+		 		this.m.FreeCounter--;
 		 	}
 		}
 		else{
 			this.getItem().removeSelf();
 		}
+
 
 
 	local delayPerDistance = 80.0;
@@ -40,6 +39,7 @@ local onUse_mod_bombs = function( _user, _targetTile )
 
 // Use MSU.Table.merge to overwrite functions so that function names are preserved in stackinfos
 local create = obj.create;
+local getTooltip = obj.getTooltip;
 ::MSU.Table.merge(obj, {
 	function create()
 	{
@@ -47,11 +47,24 @@ local create = obj.create;
 		this.m.Icon = "skills/rf_sling_acid_flask_skill.png";
 		this.m.IconDisabled = "skills/rf_sling_acid_flask_skill_sw.png";
 		this.m.Overlay = "rf_sling_acid_flask_skill";
+		this.m.FreeCounter = 0;
 	}
 
 	function onUse(_user, _targetTile){		
 		onUse_mod_bombs(_user, _targetTile);
 	}
+
+	function getTooltip(){
+		local tooltip = getTooltip();
+		tooltip.push({
+				id = 100,
+				type = "text",
+				icon = "ui/icons/special.png",
+				text = "Free Charges Remaining: " + (this.m.FreeCounter>0 ? ::MSU.Text.colorPositive(this.m.FreeCounter) : ::MSU.Text.colorNegative(this.m.FreeCounter) )
+			})
+		return tooltip;
+
+	}	
 
 });
 

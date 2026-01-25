@@ -1,5 +1,7 @@
 this.throw_poison_bomb_skill <- this.inherit("scripts/skills/skill", {
-	m = {},
+	m = {
+		FreeCounter = 0
+	},
 	function create()
 	{
 		this.m.ID = "actives.throw_poison_bomb";
@@ -52,6 +54,13 @@ this.throw_poison_bomb_skill <- this.inherit("scripts/skills/skill", {
 			type = "text",
 			icon = "ui/icons/special.png",
 			text = "Reduces the target\'s AP and Vision for 3 Turn"
+		});	
+
+		ret.push({
+				id = 100,
+				type = "text",
+				icon = "ui/icons/special.png",
+				text = "Free Charges Remaining: " + (this.m.FreeCounter>0 ? ::MSU.Text.colorPositive(this.m.FreeCounter) : ::MSU.Text.colorNegative(this.m.FreeCounter))
 		});		
 		return ret;
 	}
@@ -144,15 +153,14 @@ this.throw_poison_bomb_skill <- this.inherit("scripts/skills/skill", {
 		}
 
 		if (_user.getSkills().hasSkill("perk.rf_grenadier")){
-			local item = _user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand);
-		 	if ( item.m.UsedThisTurn ){
+		 	local item = _user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand);
+		 	if ( this.m.FreeCounter == 0 ){
 		 		_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));
 		 	}
-		 	else{
-		 		::logInfo("first time bomb is used this combat, not consuming it")
-		 		item.m.UsedThisTurn = true;
+		 	else{		 		
+		 		this.m.FreeCounter--;
 		 	}
-		}
+		}		 	
 		else{
 			_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));	
 		}

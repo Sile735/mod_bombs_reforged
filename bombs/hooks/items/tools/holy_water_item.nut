@@ -1,25 +1,52 @@
 ::mod_bombs.HooksMod.hook("scripts/items/tools/holy_water_item", function(q) {
-	q.m.UsedThisTurn <- false;
+	
+	q.onEquip = @(__original) function(){
+		__original();
+		local skill = this.getContainer().getActor().getSkills().getSkillByID("actives.throw_holy_water");
+		skill.m.FreeCounter++;		
+	}
+
+	q.onUnequip = @(__original) function(){
+		local skill = this.getContainer().getActor().getSkills().getSkillByID("actives.throw_holy_water");
+		skill.m.FreeCounter--;
+		__original();
+	}
+
 	q.onPutIntoBag = @() { function onPutIntoBag()
-	{
-		local skill = ::new("scripts/skills/actives/rf_sling_holy_water_skill_mb");
-		skill.setItem(this);
-		this.addSkill(skill);
+	{	
+  		this.addSkill(::new("scripts/skills/actives/rf_sling_holy_water_skill_mb"));  		
+  		this.getContainer().getActor().getSkills().getSkillByID("actives.sling_holy_water").m.FreeCounter++;
 	}}.onPutIntoBag;
+
+	q.onRemovedFromBag = @(__original) function()
+	{
+		local skill = this.getContainer().getActor().getSkills().getSkillByID("actives.sling_holy_water");						
+		if(skill != null && skill.m.FreeCounter>0){
+			skill.m.FreeCounter--;
+		}		
+		__original();
+	}
 
 	q.onCombatFinished = @(__original) function()
 	{
 		if( this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier")){
-			this.m.UsedThisTurn = false;
+			
+			local skill = this.getContainer().getActor().getSkills().getSkillByID("actives.sling_holy_water");
+			if (skill != null){
+				skill.m.FreeCounter = 0;
+			}
+
+			local skill = this.getContainer().getActor().getSkills().getSkillByID("actives.throw_holy_water");
+			if (skill != null){
+				skill.m.FreeCounter = 0;
+			}
+
 		};
 		return __original();
 	}
 
 	q.onCombatStarted = @(__original) function()
-	{
-		if( this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier")){
-			this.m.UsedThisTurn = false;
-		};
+	{	
 		return __original();
 	}
 
@@ -27,7 +54,7 @@
 	{
 		local tooltip = __original();
 
-		if( this.m.Container != null && this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier") && this.m.UsedThisTurn == false){
+		if( this.m.Container != null && this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier")){
 			for (local i = 0; i < tooltip.len(); ++i)
 			{
     			if (tooltip[i].id == 6)

@@ -1,7 +1,8 @@
 this.throw_frost_bomb_skill <- this.inherit("scripts/skills/skill", {
 	m = 
 	{
-		SnowTiles = []
+		SnowTiles = [],
+		FreeCounter = 0
 	},
 	function create()
 	{
@@ -41,7 +42,7 @@ this.throw_frost_bomb_skill <- this.inherit("scripts/skills/skill", {
 		this.m.MaxLevelDifference = 3;
 		this.m.ProjectileType = this.Const.ProjectileType.Flask;
 		this.m.ProjectileTimeScale = 1.5;
-		this.m.IsProjectileRotated = false;
+		this.m.IsProjectileRotated = false;		
 
 		for( local i = 1; i <= 3; i = ++i )
 		{
@@ -57,7 +58,14 @@ this.throw_frost_bomb_skill <- this.inherit("scripts/skills/skill", {
 			type = "text",
 			icon = "ui/icons/special.png",
 			text = "Freezes the target area and chills enemies for 3 turns"
-		});		
+		});	
+
+		ret.push({
+				id = 100,
+				type = "text",
+				icon = "ui/icons/special.png",
+				text = "Free Charges Remaining: " + (this.m.FreeCounter>0 ? ::MSU.Text.colorPositive(this.m.FreeCounter) : ::MSU.Text.colorNegative(this.m.FreeCounter))
+			});	
 		return ret;
 	}
 
@@ -136,15 +144,14 @@ this.throw_frost_bomb_skill <- this.inherit("scripts/skills/skill", {
 		}
 
 		if (_user.getSkills().hasSkill("perk.rf_grenadier")){
-			local item = _user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand);
-		 	if ( item.m.UsedThisTurn ){
+		 	local item = _user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand);
+		 	if ( this.m.FreeCounter == 0 ){
 		 		_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));
 		 	}
-		 	else{
-		 		::logInfo("first time bomb is used this combat, not consuming it")
-		 		item.m.UsedThisTurn = true;
+		 	else{		 		
+		 		this.m.FreeCounter--;
 		 	}
-		}
+		}		 	
 		else{
 			_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));	
 		}

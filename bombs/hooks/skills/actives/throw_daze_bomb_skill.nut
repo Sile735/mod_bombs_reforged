@@ -1,5 +1,5 @@
 ::mod_bombs.HooksMod.hook("scripts/skills/actives/throw_daze_bomb_skill", function(q) {
-
+	q.m.FreeCounter <- 0;
 
 	q.onUse = @(__original) function( _user, _targetTile ){
 		if (this.m.IsShowingProjectile && this.m.ProjectileType != 0)
@@ -12,16 +12,16 @@
 			}
 		}
 
-		if (_user.getSkills().hasSkill("perk.rf_grenadier")){
-			local item = _user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand);
-		 	if ( item.m.UsedThisTurn ){
+		if (_user.getSkills().hasSkill("perk.rf_grenadier"))
+		{
+		 	local item = _user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand);
+		 	if ( this.m.FreeCounter == 0 ){
 		 		_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));
 		 	}
-		 	else{
-		 		::logInfo("first time bomb is used this combat, not consuming it")
-		 		item.m.UsedThisTurn = true;
+		 	else{		 		
+		 		this.m.FreeCounter--;
 		 	}
-		}
+		}		 	
 		else{
 			_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));	
 		}
@@ -48,6 +48,20 @@
 			this.m.FatigueCostMult = this.Const.Combat.WeaponSpecFatigueMult;
 			// this.m.ActionPointCost = 4;
 		}
+	}
+
+	q.getTooltip = @(__original) function()
+	{
+		local tooltip = __original();
+
+		tooltip.push({
+				id = 100,
+				type = "text",
+				icon = "ui/icons/special.png",
+				text = "Free Charges Remaining: " + (this.m.FreeCounter>0 ? ::MSU.Text.colorPositive(this.m.FreeCounter) : ::MSU.Text.colorNegative(this.m.FreeCounter))
+			});
+
+		return tooltip;
 	}
 
 
