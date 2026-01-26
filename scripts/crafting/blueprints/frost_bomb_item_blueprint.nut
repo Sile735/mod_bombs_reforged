@@ -12,7 +12,7 @@ this.frost_bomb_item_blueprint <- this.inherit("scripts/crafting/blueprint", {
 				Num = 1
 			},
 			{
-				Script = "scripts/items/misc/serpent_skin_item",
+				Script = "scripts/items/misc/werewolf_pelt_item",
 				Num = 1
 			},			
 		];
