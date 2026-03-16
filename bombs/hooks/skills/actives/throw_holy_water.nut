@@ -51,7 +51,7 @@
 
 		if (_data.Skill.m.SoundOnHit.len() != 0)
 		{
-			this.Sound.play(_data.Skill.m.SoundOnHit[this.Math.rand(0, _data.Skill.m.SoundOnHit.len() - 1)], this.Const.Sound.Volume.Skill, targetEntity.getPos());
+			this.Sound.play(_data.Skill.m.SoundOnHit[this.Math.rand(0, _data.Skill.m.SoundOnHit.len() - 1)], this.Const.Sound.Volume.Skill, _data.TargetTile.Pos);
 		}
 
 		//_data.Skill.applyEffect(targetEntity);

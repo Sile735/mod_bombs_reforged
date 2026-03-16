@@ -111,9 +111,8 @@ this.frost_bomb_item <- this.inherit("scripts/items/weapons/weapon", {
 	}
 
 	function onPutIntoBag(){
-		local skill = ::new("scripts/skills/actives/rf_sling_frost_bomb_skill_mb");
-		skill.setItem(this);
-		this.addSkill(skill);
+		this.addSkill(::new("scripts/skills/actives/rf_sling_frost_bomb_skill_mb"));  		
+  		this.getContainer().getActor().getSkills().getSkillByID("actives.sling_frost_bomb").m.FreeCounter++;
 	}
 
 	function onCombatFinished()

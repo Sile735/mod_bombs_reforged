@@ -29,7 +29,7 @@
 
 	q.onCombatFinished = @(__original) function()
 	{
-		if( this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier")){
+		if( this.m.Container != null && this.m.Container.getActor().getSkills().hasSkill("perk.rf_grenadier")){
 			
 			local skill = this.getContainer().getActor().getSkills().getSkillByID("actives.sling_acid_flask");
 			if (skill != null){

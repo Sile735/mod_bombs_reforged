@@ -136,7 +136,7 @@ this.throw_poison_bomb_skill <- this.inherit("scripts/skills/skill", {
 				this.m.MaxRange = this.m.Item.getRangeMax() + (_properties.IsSpecializedInBombs ? 1 : 0);	
 			}
 			this.m.FatigueCostMult = this.Const.Combat.WeaponSpecFatigueMult;
-			this.m.ActionPointCost = 4;
+			//this.m.ActionPointCost = 4;
 		}
 	}
 

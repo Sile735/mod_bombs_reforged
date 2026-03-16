@@ -110,9 +110,8 @@ this.poison_bomb_item <- this.inherit("scripts/items/weapons/weapon", {
 	}
 
 	function onPutIntoBag(){
-		local skill = ::new("scripts/skills/actives/rf_sling_poison_bomb_skill_mb");
-		skill.setItem(this);
-		this.addSkill(skill);
+		this.addSkill(::new("scripts/skills/actives/rf_sling_poison_bomb_skill_mb"));  		
+  		this.getContainer().getActor().getSkills().getSkillByID("actives.sling_poison_bomb").m.FreeCounter++;
 	}
 
 	function onCombatFinished()
