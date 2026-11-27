@@ -1,218 +1,72 @@
-this.throw_frost_bomb_skill <- this.inherit("scripts/skills/skill", {
-	m = 
-	{
-		SnowTiles = [],
-		FreeCounter = 0
+// Throw Frost Bomb: covers 7 tiles with snow and chills everyone standing there (base: mb_aoe_bomb_skill).
+this.throw_frost_bomb_skill <- ::inherit("scripts/skills/actives/mb_aoe_bomb_skill", {
+	m = {
+		SnowTiles = null	// snow tile generators; created per instance in create() so the array is not shared
 	},
 	function create()
 	{
+		this.mb_aoe_bomb_skill.create();
 		this.m.ID = "actives.throw_frost_bomb";
 		this.m.Name = "Throw Frost Bomb";
 		this.m.Description = "Throw a flask of liquid frost towards a target, where it will shatter and spray its contents.";
 		this.m.Icon = "skills/active_96.png";
 		this.m.IconDisabled = "skills/active_96_sw.png";
 		this.m.Overlay = "active_96";
-		this.m.SoundOnUse = [
-			"sounds/combat/throw_ball_01.wav",
-			"sounds/combat/throw_ball_02.wav",
-			"sounds/combat/throw_ball_03.wav"
-		];
 		this.m.SoundOnHit = [
-			"sounds/enemies/ghastly_touch_01.wav"			
+			"sounds/enemies/ghastly_touch_01.wav"
 		];
-		this.m.SoundOnHitDelay = 0;
-		this.m.Type = this.Const.SkillType.Active;
-		this.m.Order = this.Const.SkillOrder.UtilityTargeted;
-		this.m.Delay = 0;
-		this.m.IsSerialized = false;
-		this.m.IsActive = true;
-		this.m.IsTargeted = true;
-		this.m.IsStacking = false;
-		this.m.IsAttack = true;
-		this.m.IsOffensiveToolSkill = true;
-		this.m.IsRanged = false;
-		this.m.IsIgnoredAsAOO = true;
-		this.m.IsShowingProjectile = true;
-		this.m.IsUsingHitchance = false;
-		this.m.IsDoingForwardMove = true;
-		this.m.ActionPointCost = 5;
-		this.m.FatigueCost = 20;
-		this.m.MinRange = 1;
-		this.m.MaxRange = 3;
-		this.m.MaxLevelDifference = 3;
-		this.m.ProjectileType = this.Const.ProjectileType.Flask;
-		this.m.ProjectileTimeScale = 1.5;
-		this.m.IsProjectileRotated = false;		
 
-		for( local i = 1; i <= 3; i = ++i )
+		this.m.SnowTiles = [];
+		for (local i = 1; i <= 3; i++)
 		{
-			this.m.SnowTiles.push(this.MapGen.get("tactical.tile.snow" + i));
+			this.m.SnowTiles.push(::MapGen.get("tactical.tile.snow" + i));
 		}
 	}
 
 	function getTooltip()
 	{
-		local ret = this.getDefaultUtilityTooltip();
+		local ret = this.mb_aoe_bomb_skill.getTooltip();
 		ret.push({
 			id = 6,
 			type = "text",
 			icon = "ui/icons/special.png",
-			text = "Freezes the target area and chills enemies for 3 turns"
-		});	
-
-		ret.push({
-				id = 100,
-				type = "text",
-				icon = "ui/icons/special.png",
-				text = "Free Charges Remaining: " + (this.m.FreeCounter>0 ? ::MSU.Text.colorPositive(this.m.FreeCounter) : ::MSU.Text.colorNegative(this.m.FreeCounter))
-			});	
+			text = "Freezes the target area and chills everyone in it for 3 turns"
+		});
 		return ret;
 	}
 
-	function onTargetSelected( _targetTile )
+	// Turn the tile into snow (unless it already is)
+	function applyToTile( _tile )
 	{
-		local affectedTiles = [];
-		affectedTiles.push(_targetTile);
+		if (_tile.Subtype == ::Const.Tactical.TerrainSubtype.Snow || _tile.Subtype == ::Const.Tactical.TerrainSubtype.LightSnow)
+			return;
 
-		for( local i = 0; i != 6; i = ++i )
-		{
-			if (!_targetTile.hasNextTile(i))
-			{
-			}
-			else
-			{
-				local tile = _targetTile.getNextTile(i);
-				affectedTiles.push(tile);
-			}
-		}
-
-		foreach( t in affectedTiles )
-		{
-			this.Tactical.getHighlighter().addOverlayIcon(this.Const.Tactical.Settings.AreaOfEffectIcon, t, t.Pos.X, t.Pos.Y);
-		}
-	}
-
-	function applyFrost( _target )
-	{
-		local frost = _target.getSkills().getSkillByID("scripts/skills/effects/chilled_effect");
-
-		if (frost == null)
-		{
-			_target.getSkills().add(this.new("scripts/skills/effects/chilled_effect"));
-		}
-		else
-		{
-			frost.resetTime();
-		}
-
-		this.spawnIcon("status_effect_109", _target.getTile());
-	}
-
-	function onVerifyTarget( _originTile, _targetTile )
-	{	
-
-		return true;
-	}
-
-	function onAfterUpdate( _properties )
-	{
-		if (_properties.IsSpecializedInBombs)
-		{
-			local weapon = this.getContainer().getActor().getMainhandItem();
-			if (weapon != null && weapon.isWeaponType(::Const.Items.WeaponType.Sling))
-			{
-				this.m.MinRange = weapon.getRangeMin();
-				this.m.MaxRange = weapon.getRangeMax() + (_properties.IsSpecializedInBombs ? 1 : 0);;
-			} else {
-				this.m.MaxRange = this.m.Item.getRangeMax() + (_properties.IsSpecializedInBombs ? 1 : 0);	
-			}
-			this.m.FatigueCostMult = this.Const.Combat.WeaponSpecFatigueMult;
-			//this.m.ActionPointCost = 4;
-		}
-	}
-
-	function onUse( _user, _targetTile )
-	{
-		if (this.m.IsShowingProjectile && this.m.ProjectileType != 0)
-		{
-			local flip = !this.m.IsProjectileRotated && _targetTile.Pos.X > _user.getPos().X;
-
-			if (_user.getTile().getDistanceTo(_targetTile) >= this.Const.Combat.SpawnProjectileMinDist)
-			{
-				this.Tactical.spawnProjectileEffect(this.Const.ProjectileSprite[this.m.ProjectileType], _user.getTile(), _targetTile, 1.0, this.m.ProjectileTimeScale, this.m.IsProjectileRotated, flip);
-			}
-		}
-
-		if (_user.getSkills().hasSkill("perk.rf_grenadier")){
-		 	local item = _user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand);
-		 	if ( this.m.FreeCounter == 0 ){
-		 		_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));
-		 	}
-		 	else{		 		
-		 		this.m.FreeCounter--;
-		 	}
-		}		 	
-		else{
-			_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));	
-		}
-		this.Time.scheduleEvent(this.TimeUnit.Real, 200, this.onApply.bindenv(this), {
-			Skill = this,
-			TargetTile = _targetTile
+		::Time.scheduleEvent(::TimeUnit.Virtual, 350, function( _data ) {
+			_data.Tile.clear();
+			_data.Tile.Type = 0;
+			::MSU.Array.rand(_data.Skill.m.SnowTiles).onFirstPass({
+				X = _data.Tile.SquareCoords.X,
+				Y = _data.Tile.SquareCoords.Y,
+				W = 1,
+				H = 1,
+				IsEmpty = true,
+				SpawnObjects = false
+			});
+		}, {
+			Tile = _tile,
+			Skill = this
 		});
 	}
 
-	function onApply( _data )
-	{	
+	function applyToTarget( _target )
+	{
+		// The ID is "effects.chilled" (looking it up by script path never found it before)
+		local chilled = _target.getSkills().getSkillByID("effects.chilled");
+		if (chilled == null)
+			_target.getSkills().add(::new("scripts/skills/effects/chilled_effect"));
+		else
+			chilled.resetTime();
 
-		local targets = [];
-		targets.push(_data.TargetTile);
-
-		for( local i = 0; i != 6; i = ++i )
-		{
-			if (!_data.TargetTile.hasNextTile(i))
-			{
-			}
-			else
-			{
-				local tile = _data.TargetTile.getNextTile(i);
-				targets.push(tile);
-			}
-		}
-
-		foreach (nextTile in targets){
-			if (nextTile.Subtype != this.Const.Tactical.TerrainSubtype.Snow && nextTile.Subtype != this.Const.Tactical.TerrainSubtype.LightSnow)
-				{
-					this.Time.scheduleEvent(this.TimeUnit.Virtual, 350, function ( _data )
-					{
-						_data.Tile.clear();
-						_data.Tile.Type = 0;
-						_data.Skill.m.SnowTiles[this.Math.rand(0, _data.Skill.m.SnowTiles.len() - 1)].onFirstPass({
-							X = _data.Tile.SquareCoords.X,
-							Y = _data.Tile.SquareCoords.Y,
-							W = 1,
-							H = 1,
-							IsEmpty = true,
-							SpawnObjects = false
-						});
-					}, {
-						Tile = nextTile,
-						Skill = this
-					});
-				}
-		}
-
-		if (_data.Skill.m.SoundOnHit.len() != 0)
-		{
-			this.Sound.play(_data.Skill.m.SoundOnHit[this.Math.rand(0, _data.Skill.m.SoundOnHit.len() - 1)], this.Const.Sound.Volume.Skill, _data.TargetTile.Pos);
-		}
-	
-
-		foreach( tile in targets ){
-			if (tile.IsOccupiedByActor){
-					_data.Skill.applyFrost(tile.getEntity());
-			}	
-		}	
+		this.spawnIcon("status_effect_109", _target.getTile());
 	}
-
 });
-

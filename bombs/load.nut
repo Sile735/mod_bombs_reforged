@@ -1,3 +1,3 @@
-::logInfo("Bombs Loading");
-::includeFiles(::IO.enumerateFiles("bombs/hooks"));		// This will load and execute all hooks
-::logInfo("loaded " + ::IO.enumerateFiles("bombs/hooks"))
+// Shared helpers first (used by several hook files), then every hook file.
+::include("bombs/grenadier_helper.nut");
+::includeFiles(::IO.enumerateFiles("bombs/hooks"));

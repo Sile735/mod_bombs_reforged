@@ -1,3 +1,5 @@
+# Builds the mod zip and attaches it to a GitHub release.
+# Runs when a release is published (tag = version, e.g. 0.6.0) or manually from the Actions tab.
 name: Create Release Zip
 
 on:
@@ -16,10 +18,9 @@ jobs:
 
       - name: Create versioned ZIP
         run: |
-          # Remove .git directory from archive
-          rm -rf .git
-          # Create ZIP with flat structure using version tag
-          zip -r "mod_bombs_reforged-${{ github.event.release.tag_name }}.zip" . -x '*.git*'
+          # The zip root must contain scripts/ etc. directly, exactly as in the game's data folder.
+          # Development-only files are left out: git files, the BBBuilder cache and the unpacked brush sources.
+          zip -r "mod_bombs_reforged-${{ github.event.release.tag_name }}.zip" . -x '*.git*' '.bbbuilder/*' 'unpacked_brushes/*' '.editorconfig' '*.sublime-*'
 
       - name: Upload to Release
         uses: ncipollo/release-action@v1.12.0

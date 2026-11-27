@@ -1,127 +1,60 @@
+// Throw Acid Flask: splashes the target tile AND the 6 surrounding tiles (vanilla: target tile only),
+// can target any tile (also empty ones), plus Grenadier / bomb specialization support.
 ::mod_bombs.HooksMod.hook("scripts/skills/actives/throw_acid_flask", function(q) {
-	q.m.FreeCounter <- 0;	
-	q.onTargetSelected = @(__original) function( _targetTile )
+	// Returns the target tile plus all existing neighbours
+	q.mb_getAffectedTiles <- function( _targetTile )
 	{
-		local affectedTiles = [];
-		affectedTiles.push(_targetTile);
-
-		for( local i = 0; i != 6; i = ++i )
+		local ret = [_targetTile];
+		for (local i = 0; i < 6; i++)
 		{
-			if (!_targetTile.hasNextTile(i))
-			{
-			}
-			else
-			{
-				local tile = _targetTile.getNextTile(i);
-				affectedTiles.push(tile);
-			}
+			if (_targetTile.hasNextTile(i))
+				ret.push(_targetTile.getNextTile(i));
 		}
-
-		foreach( t in affectedTiles )
-		{
-			this.Tactical.getHighlighter().addOverlayIcon(this.Const.Tactical.Settings.AreaOfEffectIcon, t, t.Pos.X, t.Pos.Y);
-		}
+		return ret;
 	}
 
-	q.onVerifyTarget = @(__original) function( _originTile, _targetTile )
+	// Highlight the whole area while aiming
+	q.onTargetSelected = @() { function onTargetSelected( _targetTile )
+	{
+		foreach (t in this.mb_getAffectedTiles(_targetTile))
+		{
+			::Tactical.getHighlighter().addOverlayIcon(::Const.Tactical.Settings.AreaOfEffectIcon, t, t.Pos.X, t.Pos.Y);
+		}
+	}}.onTargetSelected;
+
+	// Any tile in range is a valid target, it does not need to contain an enemy
+	q.onVerifyTarget = @() { function onVerifyTarget( _originTile, _targetTile )
 	{
 		return true;
-	}
+	}}.onVerifyTarget;
 
-	q.onApplyAcid = @(__original) function( _data )
+	// Scheduled by vanilla onUse after the projectile lands
+	q.onApplyAcid = @() { function onApplyAcid( _data )
 	{
-		local targetEntity = _data.TargetTile.getEntity();
-
-		local targets = [];
-		targets.push(_data.TargetTile);
-
-		for( local i = 0; i != 6; i = ++i )
+		local skill = _data.Skill;
+		if (skill.m.SoundOnHit.len() != 0)
 		{
-			if (!_data.TargetTile.hasNextTile(i))
-			{
-			}
-			else
-			{
-				local tile = _data.TargetTile.getNextTile(i);
-				targets.push(tile);
-			}
+			::Sound.play(::MSU.Array.rand(skill.m.SoundOnHit), ::Const.Sound.Volume.Skill, _data.TargetTile.Pos);
 		}
 
-
-		if (_data.Skill.m.SoundOnHit.len() != 0)
+		foreach (tile in skill.mb_getAffectedTiles(_data.TargetTile))
 		{
-			this.Sound.play(_data.Skill.m.SoundOnHit[this.Math.rand(0, _data.Skill.m.SoundOnHit.len() - 1)], this.Const.Sound.Volume.Skill, _data.TargetTile.Pos);
+			if (tile.IsOccupiedByActor)
+				skill.applyAcid(tile.getEntity());
 		}
+	}}.onApplyAcid;
 
-		//_data.Skill.applyEffect(targetEntity);
-
-		foreach( tile in targets ){
-			if (tile.IsOccupiedByActor){
-					_data.Skill.applyAcid(tile.getEntity());
-			}	
-		}			
-		
-	}
-
-	q.onUse = @(__original) function( _user, _targetTile ){
-
-		if (this.m.IsShowingProjectile && this.m.ProjectileType != 0)
-		{
-			local flip = !this.m.IsProjectileRotated && _targetTile.Pos.X > _user.getPos().X;
-
-			if (_user.getTile().getDistanceTo(_targetTile) >= this.Const.Combat.SpawnProjectileMinDist)
-			{
-				this.Tactical.spawnProjectileEffect(this.Const.ProjectileSprite[this.m.ProjectileType], _user.getTile(), _targetTile, 1.0, this.m.ProjectileTimeScale, this.m.IsProjectileRotated, flip);
-			}
-		}
-
-		if (_user.getSkills().hasSkill("perk.rf_grenadier")){		 	
-		 	if ( this.m.FreeCounter == 0 ){
-		 		_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));
-		 	}
-		 	else{		 		
-		 		this.m.FreeCounter--;
-		 	}
-	 	}		 	
-		else{
-			_user.getItems().unequip(_user.getItems().getItemAtSlot(this.Const.ItemSlot.Offhand));	
-		};
-		
-		this.Time.scheduleEvent(this.TimeUnit.Real, 200, this.onApplyAcid.bindenv(this), {
-			Skill = this,
-			TargetTile = _targetTile
-		});
-	}
-
-	q.onAfterUpdate = @(__original) function( _properties )
+	// +1 range, reduced fatigue and sling range when specialized in bombs (see bombs/grenadier_helper.nut)
+	q.onAfterUpdate = @(__original) { function onAfterUpdate( _properties )
 	{
-		if (_properties.IsSpecializedInBombs)
-		{
-			local weapon = this.getContainer().getActor().getMainhandItem();
-			if (weapon != null && weapon.isWeaponType(::Const.Items.WeaponType.Sling))
-			{
-				this.m.MinRange = weapon.getRangeMin();
-				this.m.MaxRange = weapon.getRangeMax() + (_properties.IsSpecializedInBombs ? 1 : 0);;
-			} else {
-				this.m.MaxRange = this.m.MaxRange + (_properties.IsSpecializedInBombs ? 1 : 0);	
-			}
-			this.m.FatigueCostMult = this.Const.Combat.WeaponSpecFatigueMult;
-			// this.m.ActionPointCost = 4;
-		}
-	}
+		__original(_properties);
+		::mod_bombs.applyBombSpecialization(this, _properties);
+	}}.onAfterUpdate;
 
-	q.getTooltip = @(__original) function()
+	q.getTooltip = @(__original) { function getTooltip()
 	{
-		local tooltip = __original();
-
-		tooltip.push({
-				id = 100,
-				type = "text",
-				icon = "ui/icons/special.png",
-				text = "Free Charges Remaining: " + (this.m.FreeCounter>0 ? ::MSU.Text.colorPositive(this.m.FreeCounter) : ::MSU.Text.colorNegative(this.m.FreeCounter))
-			});
-
-		return tooltip;
-	}
-	
-})
+		local ret = __original();
+		::mod_bombs.Grenadier.addSkillTooltip(this, ret);
+		return ret;
+	}}.getTooltip;
+});

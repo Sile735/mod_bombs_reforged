@@ -1,5 +1,7 @@
+// Throwing perk group: adds Grenadier at tier 7.
+// The whole tree is redefined on purpose (create() is replaced, not wrapped).
 ::mod_bombs.HooksMod.hook("scripts/mods/mod_reforged/perk_groups/pg_rf_throwing", function(q) {
-	q.create = @() function()
+	q.create = @() { function create()
 	{
 		this.m.ID = "pg.rf_throwing";
 		this.m.Name = "Throwing";
@@ -12,6 +14,6 @@
 			["perk.rf_opportunist"],
 			[],
 			["perk.rf_grenadier"]
-		];		
-	}
+		];
+	}}.create;
 });

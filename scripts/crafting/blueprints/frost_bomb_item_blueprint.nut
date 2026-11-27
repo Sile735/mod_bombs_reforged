@@ -3,7 +3,7 @@ this.frost_bomb_item_blueprint <- this.inherit("scripts/crafting/blueprint", {
 	function create()
 	{
 		this.blueprint.create();
-		this.m.ID = "blueprint.poison_bomb_item";
+		this.m.ID = "blueprint.frost_bomb_item";	// was "blueprint.poison_bomb_item" (clashed with the poison bomb recipe)
 		this.m.PreviewCraftable = this.new("scripts/items/tools/frost_bomb_item");
 		this.m.Cost = 50;
 		local ingredients = [
